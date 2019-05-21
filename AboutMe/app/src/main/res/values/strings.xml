@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">AboutMe</string>
+    <string name="name">willwaywang6</string>
+    <string name="yellow_star">Yellow star</string>
+    <string name="bio">Hi, my name is Wangzhichao.
+    \n\nI am from Huixian city, Henan province, China.
+    \n\nI am working in Shanghai now. I am a programmer. After work, I like to read history books, watch history movies.
+    \n\nEven though I work in Shanghai, which is the richest and biggest city of China, I can\'t help missing home. In my opinion, I simply make money in Shanghai, which is the only reason that I stay here. If I make enough money, I\'ll go home as soon as possible. However, I don\'t know when that day is coming.
+    \n\nIn Shanghai, I lead a simple life: work, eat and sleep. That\'t all. Maybe I should have a change. Get married, Study a foreign language, or something else? Who knows? After all, having fun is the most important.\n\n</string>
+    <string name="what_is_your_nickname">What is your Nickname?</string>
+    <string name="done">Done</string>
+</resources>
