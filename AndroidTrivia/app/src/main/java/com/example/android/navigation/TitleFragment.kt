@@ -34,13 +34,18 @@ class TitleFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Timber.i("onCreateView Called")
         setHasOptionsMenu(true)
         val binding = FragmentTitleBinding.inflate(inflater, container, false)
         binding.playButton.setOnClickListener { view: View ->
             view.findNavController().navigate(TitleFragmentDirections.actionTitleFragmentToGameFragment())
         }
+        Timber.i("onCreateView Called")
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Timber.i("onViewCreated Called")
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
