@@ -13,18 +13,18 @@ import timber.log.Timber
  * </pre>
  */
 class GameViewModel : ViewModel() {
+    // The current word
+    var word = ""
+
+    // The current score
+    var score = 0
+
     init {
         Timber.i("GameViewModel created!")
         // 必须在 init 代码块中
         resetList()
         nextWord()
     }
-
-    // The current word
-    var word = ""
-
-    // The current score
-    var score = 0
 
     // The list of words - the front of the list is the next word to guess
     private lateinit var wordList: MutableList<String>
