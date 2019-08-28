@@ -1,5 +1,6 @@
 package com.example.android.guesstheword.screens.game
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import timber.log.Timber
@@ -15,14 +16,18 @@ import timber.log.Timber
  */
 class GameViewModel : ViewModel() {
     // The current word
-    var word = MutableLiveData<String>()
+    private val _word = MutableLiveData<String>()
+    val word: LiveData<String>
+        get() = _word
 
     // The current score
-    var score = MutableLiveData<Int>()
+    private val _score = MutableLiveData<Int>()
+    val score: LiveData<Int>
+        get() = _score
 
     init {
-        word.value = ""
-        score.value = 0
+        _word.value = ""
+        _score.value = 0
         Timber.i("GameViewModel created!")
         // 必须在 init 代码块中
         resetList()
@@ -37,27 +42,27 @@ class GameViewModel : ViewModel() {
      */
     private fun resetList() {
         wordList = mutableListOf(
-            "queen",
-            "hospital",
-            "basketball",
-            "cat",
-            "change",
-            "snail",
-            "soup",
-            "calendar",
-            "sad",
-            "desk",
-            "guitar",
-            "home",
-            "railway",
-            "zebra",
-            "jelly",
-            "car",
-            "crow",
-            "trade",
-            "bag",
-            "roll",
-            "bubble"
+                "queen",
+                "hospital",
+                "basketball",
+                "cat",
+                "change",
+                "snail",
+                "soup",
+                "calendar",
+                "sad",
+                "desk",
+                "guitar",
+                "home",
+                "railway",
+                "zebra",
+                "jelly",
+                "car",
+                "crow",
+                "trade",
+                "bag",
+                "roll",
+                "bubble"
         )
         wordList.shuffle()
     }
@@ -68,7 +73,7 @@ class GameViewModel : ViewModel() {
     private fun nextWord() {
         if (!wordList.isEmpty()) {
             //Select and remove a word from the list
-            word.value = wordList.removeAt(0)
+            _word.value = wordList.removeAt(0)
         }
 //        updateWordText()
 //        updateScoreText()
@@ -78,14 +83,14 @@ class GameViewModel : ViewModel() {
 
     fun onSkip() {
         if (!wordList.isEmpty()) {
-            score.value = (score.value)?.minus(1)
+            _score.value = (score.value)?.minus(1)
         }
         nextWord()
     }
 
     fun onCorrect() {
         if (!wordList.isEmpty()) {
-            score.value = (score.value)?.plus(1)
+            _score.value = (score.value)?.plus(1)
         }
         nextWord()
     }
