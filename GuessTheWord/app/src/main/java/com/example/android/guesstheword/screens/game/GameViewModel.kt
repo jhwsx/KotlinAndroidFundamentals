@@ -1,8 +1,10 @@
 package com.example.android.guesstheword.screens.game
 
 import android.os.CountDownTimer
+import android.text.format.DateUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import timber.log.Timber
 
@@ -30,7 +32,9 @@ class GameViewModel : ViewModel() {
     private val _currentTime = MutableLiveData<Long>()
     val currentTime: LiveData<Long>
         get() = _currentTime
-
+    val currentTimeString = Transformations.map(currentTime) {time ->
+        DateUtils.formatElapsedTime(time)
+    }
     private val timer: CountDownTimer
     // Event which triggers the end of the game
     private val _eventGameFinish = MutableLiveData<Boolean>()
