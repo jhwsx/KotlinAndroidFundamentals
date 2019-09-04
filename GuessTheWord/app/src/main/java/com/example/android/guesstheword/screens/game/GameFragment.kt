@@ -61,6 +61,8 @@ class GameFragment : Fragment() {
         )
         Timber.i("Called ViewModelProviders.of")
         viewModel = ViewModelProviders.of(this).get(GameViewModel::class.java)
+        // Set the viewmodel for databinding
+        binding.gameViewModel = viewModel
         viewModel.score.observe(this, Observer { newScore ->
             binding.scoreText.text = newScore.toString()
         })
@@ -70,8 +72,8 @@ class GameFragment : Fragment() {
         viewModel.eventGameFinish.observe(this, Observer { hasFinished ->
             if (hasFinished) gameFinished()
         })
-        binding.correctButton.setOnClickListener { onCorrect() }
-        binding.skipButton.setOnClickListener { onSkip() }
+//        binding.correctButton.setOnClickListener { onCorrect() }
+//        binding.skipButton.setOnClickListener { onSkip() }
         binding.endGameButton.setOnClickListener { onEndGame() }
 //        updateScoreText()
 //        updateWordText()
