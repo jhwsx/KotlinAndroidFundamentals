@@ -1,5 +1,6 @@
 package com.example.android.guesstheword.screens.game
 
+import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,12 +26,30 @@ class GameViewModel : ViewModel() {
     val score: LiveData<Int>
         get() = _score
 
+    // Countdown time
+    private val _currentTime = MutableLiveData<Long>()
+    val currentTime: LiveData<Long>
+        get() = _currentTime
+
+    private val timer: CountDownTimer
     // Event which triggers the end of the game
     private val _eventGameFinish = MutableLiveData<Boolean>()
     val eventGameFinish: LiveData<Boolean>
         get() = _eventGameFinish
 
     init {
+        timer = object : CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
+            override fun onFinish() {
+                _currentTime.value = DONE
+                onGameFinish()
+            }
+
+            override fun onTick(millisUntilFinished: Long) {
+                _currentTime.value = millisUntilFinished / ONE_SECOND
+            }
+
+        }
+        timer.start()
         _word.value = ""
         _score.value = 0
         Timber.i("GameViewModel created!")
@@ -77,7 +96,8 @@ class GameViewModel : ViewModel() {
      */
     private fun nextWord() {
         if (wordList.isEmpty()) {
-            onGameFinish()
+//            onGameFinish()
+            resetList()
         } else {
             //Select and remove a word from the list
             _word.value = wordList.removeAt(0)
@@ -109,9 +129,23 @@ class GameViewModel : ViewModel() {
     fun onGameFinishComplete() {
         _eventGameFinish.value = false
     }
+
     override fun onCleared() {
         super.onCleared()
         Timber.i("GameViewModel destroyed!")
+        // Cancel the timer
+        timer.cancel()
     }
 
+    companion object {
+
+        // Time when the game is over
+        private const val DONE = 0L
+
+        // Countdown time interval
+        private const val ONE_SECOND = 1000L
+
+        // Total time for the game
+        private const val COUNTDOWN_TIME = 60000L
+    }
 }
