@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import timber.log.Timber
+import java.util.Random
 
 /**
  * <pre>
@@ -32,8 +33,19 @@ class GameViewModel : ViewModel() {
     private val _currentTime = MutableLiveData<Long>()
     val currentTime: LiveData<Long>
         get() = _currentTime
-    val currentTimeString = Transformations.map(currentTime) {time ->
+    val currentTimeString = Transformations.map(currentTime) { time ->
         DateUtils.formatElapsedTime(time)
+    }
+    val currentWordLetters = Transformations.map(word) { word ->
+        word.length
+    }
+    private val random = Random()
+    private val _randomPosition = MutableLiveData<Int>()
+    val randomPosition: LiveData<Int>
+        get() = _randomPosition
+    val positionLetter = Transformations.map(word) {word->
+        _randomPosition.value= random.nextInt(word.length)
+        word.get(_randomPosition.value!!).toUpperCase()
     }
     private val timer: CountDownTimer
     // Event which triggers the end of the game
