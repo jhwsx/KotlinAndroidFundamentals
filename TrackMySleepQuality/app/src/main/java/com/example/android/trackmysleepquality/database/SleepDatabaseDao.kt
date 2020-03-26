@@ -24,21 +24,27 @@ import androidx.room.Update
 
 @Dao
 interface SleepDatabaseDao {
+    // insert new night
     @Insert
     fun insert(night: SleepNight)
 
+    // update an existing night to update an end time and a quality rating.
     @Update
     fun update(night: SleepNight)
 
-    @Query("SELECT * FROM daily_sleep_quality_table WHERE nightId = :key")
+    // get a specified night based on key.
+    @Query("SELECT * FROM daily_sleep_quality_table WHERE nightId = :key") // :key 表示引用函数中的参数
     fun get(key: Long): SleepNight?
 
-    @Query("DELETE FROM daily_sleep_quality_table")
+    // delete all entries in the database
+    @Query("DELETE FROM daily_sleep_quality_table") // 清空数据,并不会把表删掉
     fun clear()
 
+    // get the most recent night
     @Query("SELECT * FROM daily_sleep_quality_table ORDER BY nightId DESC LIMIT 1")
-    fun getTonight(): SleepNight?
+    fun getTonight(): SleepNight? // 返回的是可空类型
 
+    // get all nights, so you can display it
     @Query("SELECT * FROM daily_sleep_quality_table ORDER BY nightId DESC")
     fun getAllNights(): LiveData<List<SleepNight>>
 }

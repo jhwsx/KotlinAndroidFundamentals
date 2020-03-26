@@ -36,7 +36,7 @@ import java.io.IOException
  * adding the UI.
  */
 
-@RunWith(AndroidJUnit4::class)
+@RunWith(AndroidJUnit4::class) // 确定 test runner, 即设置和执行测试的程序.
 class SleepDatabaseTest {
 
     private lateinit var sleepDao: SleepDatabaseDao
@@ -60,7 +60,7 @@ class SleepDatabaseTest {
         db.close()
     }
 
-    @Test
+    @Test // 测试方法
     @Throws(Exception::class)
     fun insertAndGetNight() {
         val night = SleepNight()
@@ -81,4 +81,25 @@ class SleepDatabaseTest {
         }
 
     }
+
+    @Test
+    @Throws(Exception::class)
+    fun clear() {
+        val night = SleepNight()
+        sleepDao.insert(night)
+        sleepDao.clear()
+        val allNightsLiveData = sleepDao.getAllNights()
+        assertEquals(allNightsLiveData.value?.size ?: 0, 0)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun getTonight() {
+        val night = SleepNight()
+        night.sleepQuality = 5
+        sleepDao.insert(night)
+        val tonight = sleepDao.getTonight()
+        assertEquals(tonight!!.sleepQuality, 5)
+    }
+
 }

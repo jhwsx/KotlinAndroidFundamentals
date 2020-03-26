@@ -20,22 +20,25 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-
+// 这个类是抽象类,作用是作为数据库的持有者
 @Database(entities = [SleepNight::class], version = 1, exportSchema = false)
 abstract class SleepDatabase : RoomDatabase() {
+
     abstract val sleepDatabaseDao: SleepDatabaseDao
 
     companion object {
-        @Volatile
+        @Volatile // volatile 保证可见性
         private var INSTANCE: SleepDatabase? = null
 
         fun getInstance(context: Context): SleepDatabase {
             synchronized(this) {
                 var instance = INSTANCE
                 if (instance == null) {
-                    instance = Room.databaseBuilder(context,
+                    instance = Room.databaseBuilder(
+                            context.applicationContext,
                             SleepDatabase::class.java,
                             "sleep_history_database")
+                            // 删除旧表,使用新表,不保留数据
                             .fallbackToDestructiveMigration()
                             .build()
                     INSTANCE = instance
