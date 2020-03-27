@@ -18,6 +18,7 @@ package com.example.android.trackmysleepquality.sleeptracker
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.android.trackmysleepquality.database.SleepDatabaseDao
@@ -30,18 +31,21 @@ import kotlinx.coroutines.*
  */
 class SleepTrackerViewModel(
         val database: SleepDatabaseDao,
-        application: Application) : AndroidViewModel(application) {
+        application: Application) : AndroidViewModel(application) { // AndroidViewModel 会接收一个 Application 的 context。
     // 作用是当 viewmodel 不再使用或者销毁时，让我们可以取消由这个 viewmodel 开启的所有 corountines。
+    // This way, you don't end up with coroutines that have nowhere to return to.
     private var viewModelJob = Job()
     // The scope determines what thread the coroutine will run on, and the scope
     // also needs to know about the job.
-    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob) // + 就是 plus 函数
 
-    private val nights = database.getAllNights()
+    private val nights: LiveData<List<SleepNight>> = database.getAllNights()
+
     // 这里是做了转换，跟 RxJava 的 map 类似。
     val nightString = Transformations.map(nights) { nights ->
         formatNights(nights, application.resources)
     }
+    // 持有当前的night，设置为 MutableLiveData 是因为不仅要监控数据也要改变数据。
     private var tonight = MutableLiveData<SleepNight?>()
 
     init {
@@ -54,6 +58,7 @@ class SleepTrackerViewModel(
         }
     }
 
+    // 这里返回可空类型，是因为数据库中可能不存在需要的 SleepNight 数据
     private suspend fun getTonightFromDatabase(): SleepNight? {
         return withContext(Dispatchers.IO) {
             var night = database.getTonight()
@@ -67,11 +72,28 @@ class SleepTrackerViewModel(
     }
 
     // 点击 start 按钮事件的点击事件处理器
+    // 这是采用了 listener bindings 的方式
     fun onStartTracking() {
         uiScope.launch {
+            // 创建新的 SleepNight，此时 startTimeMill 和 endTImeMill 是相等的。
             val newNight = SleepNight()
             insert(newNight)
             tonight.value = getTonightFromDatabase()
+        }
+    }
+
+    fun onStopTracking() {
+        uiScope.launch {
+            val oldNight = tonight.value ?: return@launch
+            oldNight.endTimeMilli = System.currentTimeMillis()
+            update(oldNight)
+        }
+    }
+
+    fun onClear() {
+        uiScope.launch {
+            clear()
+            tonight.value = null
         }
     }
 
@@ -81,6 +103,17 @@ class SleepTrackerViewModel(
         }
     }
 
+    private suspend fun update(night: SleepNight) {
+        withContext(Dispatchers.IO) {
+            database.update(night)
+        }
+    }
+
+    private suspend fun clear() {
+        withContext(Dispatchers.IO) {
+            database.clear()
+        }
+    }
     override fun onCleared() {
         super.onCleared()
         // 取消所有的 coroutines。

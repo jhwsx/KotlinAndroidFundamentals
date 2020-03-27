@@ -45,11 +45,12 @@ class SleepTrackerFragment : Fragment() {
         // Get a reference to the binding object and inflate the fragment views.
         val binding: FragmentSleepTrackerBinding = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_sleep_tracker, container, false)
+        // todo requireNotNull 里面用到了 contract 契约，还不懂
         val application = requireNotNull(this.activity).application
         val dataSource = SleepDatabase.getInstance(application).sleepDatabaseDao
         val viewModelFactory = SleepTrackerViewModelFactory(dataSource, application)
         val sleepTrackerViewModel = ViewModelProviders.of(this, viewModelFactory).get(SleepTrackerViewModel::class.java)
-        // 设置 binding 的 LifecycleOwner
+        // 设置 binding 的 LifecycleOwner, 设置当前的 Fragment 作为 binding 的 lifecycleOwner。
         binding.lifecycleOwner = this
         binding.sleepTrackerViewModel = sleepTrackerViewModel
         return binding.root
