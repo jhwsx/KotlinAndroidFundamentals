@@ -40,6 +40,7 @@
         android:name="com.example.android.trackmysleepquality.sleepquality.SleepQualityFragment"
         android:label="@string/sleep_quality_fragment"
         tools:layout="@layout/fragment_sleep_quality">
+        <!--这个key用于告诉用户在 SleepQualityFragment 里点击睡眠评级后更新哪一个 SleepNight-->
         <argument
             android:name="sleepNightKey"
             app:argType="long" />

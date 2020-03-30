@@ -48,6 +48,24 @@ class SleepTrackerViewModel(
     // 持有当前的night，设置为 MutableLiveData 是因为不仅要监控数据也要改变数据。
     private var tonight = MutableLiveData<SleepNight?>()
 
+    // 控制 button 是否可用
+    val startButtonVisible = Transformations.map(tonight) {
+        it == null
+    }
+    val stopButtonVisible = Transformations.map(tonight) {
+        it != null
+    }
+    val clearButtonVisible = Transformations.map(nights) {
+        it?.isNotEmpty()
+    }
+    private val _navigateToSleepQuality = MutableLiveData<SleepNight>()
+    val navigateToSleepQuality: LiveData<SleepNight>
+        get() = _navigateToSleepQuality
+
+    private val _showSnackbarEvent = MutableLiveData<Boolean>()
+    val showSnackbarEvent: LiveData<Boolean>
+        get() = _showSnackbarEvent
+
     init {
         initializeTonight()
     }
@@ -87,6 +105,7 @@ class SleepTrackerViewModel(
             val oldNight = tonight.value ?: return@launch
             oldNight.endTimeMilli = System.currentTimeMillis()
             update(oldNight)
+            _navigateToSleepQuality.value = oldNight
         }
     }
 
@@ -95,6 +114,15 @@ class SleepTrackerViewModel(
             clear()
             tonight.value = null
         }
+    }
+
+    // 重置触发导航的变量
+    fun doneNavigating() {
+        _navigateToSleepQuality.value = null
+    }
+
+    fun doneShowingSnackbar() {
+        _showSnackbarEvent.value = false
     }
 
     private suspend fun insert(night: SleepNight) {
@@ -113,7 +141,9 @@ class SleepTrackerViewModel(
         withContext(Dispatchers.IO) {
             database.clear()
         }
+        _showSnackbarEvent.value = true
     }
+
     override fun onCleared() {
         super.onCleared()
         // 取消所有的 coroutines。
