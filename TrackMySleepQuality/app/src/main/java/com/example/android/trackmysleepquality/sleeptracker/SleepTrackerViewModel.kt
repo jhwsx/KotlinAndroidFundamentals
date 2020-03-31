@@ -39,7 +39,7 @@ class SleepTrackerViewModel(
     // also needs to know about the job.
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob) // + 就是 plus 函数
 
-    private val nights: LiveData<List<SleepNight>> = database.getAllNights()
+    val nights: LiveData<List<SleepNight>> = database.getAllNights()
 
     // 这里是做了转换，跟 RxJava 的 map 类似。
     val nightString = Transformations.map(nights) { nights ->
