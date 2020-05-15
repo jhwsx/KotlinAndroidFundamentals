@@ -125,6 +125,18 @@ class SleepTrackerViewModel(
         _showSnackbarEvent.value = false
     }
 
+    private val _navigationToSleepDetail = MutableLiveData<Long>()
+    val navigationToSleepDetail
+            get() = _navigationToSleepDetail
+
+    fun onSleepNightClicked(id: Long) {
+        _navigationToSleepDetail.value = id
+    }
+
+    fun onSleepNightNavigated() {
+        _navigationToSleepDetail.value = null
+    }
+
     private suspend fun insert(night: SleepNight) {
         withContext(Dispatchers.IO) {
             database.insert(night)

@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -57,8 +58,7 @@ class SleepTrackerFragment : Fragment() {
         // 设置 binding 的 LifecycleOwner, 设置当前的 Fragment 作为 binding 的 lifecycleOwner。
         binding.lifecycleOwner = this
         binding.sleepTrackerViewModel = sleepTrackerViewModel
-        sleepTrackerViewModel.navigateToSleepQuality.observe(this, Observer {
-            night ->
+        sleepTrackerViewModel.navigateToSleepQuality.observe(this, Observer { night ->
             night?.let {
                 this.findNavController().navigate(
                         SleepTrackerFragmentDirections.actionSleepTrackerFragmentToSleepQualityFragment(it.nightId)
@@ -73,11 +73,22 @@ class SleepTrackerFragment : Fragment() {
                 sleepTrackerViewModel.doneShowingSnackbar()
             }
         })
-        val adapter = SleepNightAdapter()
+        val adapter = SleepNightAdapter(SleepNightListener { nightId ->
+            sleepTrackerViewModel.onSleepNightClicked(nightId)
+        })
         binding.sleepList.adapter = adapter
         sleepTrackerViewModel.nights.observe(this, Observer {
             it?.let {
                 adapter.submitList(it)
+            }
+        })
+        sleepTrackerViewModel.navigationToSleepDetail.observe(this, Observer { nightId ->
+            nightId?.let {
+                findNavController().navigate(
+                        SleepTrackerFragmentDirections
+                                .actionSleepTrackerFragmentToSleepDetailFragment(nightId))
+                sleepTrackerViewModel.onSleepNightNavigated()
+
             }
         })
         val manager = GridLayoutManager(activity, 3)
